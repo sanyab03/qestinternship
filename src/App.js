@@ -1,17 +1,16 @@
 import React, { useState } from "react";
+import { FaShoppingCart, FaSearch } from "react-icons/fa";
 
 const services = [
-  { id: 1, name: "Fitness Class", price: 20 },
-  { id: 2, name: "Therapy Session", price: 50 },
-  { id: 3, name: "Workshop", price: 30 },
+  { id: 1, name: "Fitness Class", price: 20, image: "images/workoutnew.avif", discount: "10% Off" },
+  { id: 2, name: "Therapy Session", price: 50, image: "images/therapynew.webp", discount: "15% Off" },
+  { id: 3, name: "Workshop", price: 30, image: "images/workshopnew.avif", discount: "15% Off" },
 ];
 
 export default function POS() {
   const [cart, setCart] = useState([]);
   const [customer, setCustomer] = useState({ name: "", email: "", phone: "" });
-  const [checkoutComplete, setCheckoutComplete] = useState(false);
-  const [refNumber] = useState(Math.floor(Math.random() * 1000000000000));
-  const paymentTime = new Date().toLocaleString();
+  const [showReceipt, setShowReceipt] = useState(false);
 
   const addToCart = (service) => {
     setCart([...cart, service]);
@@ -21,112 +20,112 @@ export default function POS() {
     setCart(cart.filter((_, i) => i !== index));
   };
 
-  const handleCustomerChange = (e) => {
+  const handleInputChange = (e) => {
     setCustomer({ ...customer, [e.target.name]: e.target.value });
-  };
-
-  const handleCheckout = () => {
-    if (cart.length === 0 || !customer.name || !customer.email || !customer.phone) {
-      alert("Please fill in customer details and add items to the cart before checkout.");
-      return;
-    }
-    setCheckoutComplete(true);
   };
 
   const total = cart.reduce((sum, item) => sum + item.price, 0);
 
+  const handleCheckout = () => {
+    if (!customer.name || !customer.email || !customer.phone) {
+      alert("Please enter your details before checkout.");
+      return;
+    }
+
+    if (cart.length === 0) {
+      alert("Your cart is empty! Please add items before checkout.");
+      return;
+    }
+
+    setShowReceipt(true);
+  };
+
   return (
-    <div className="p-6 max-w-2xl mx-auto bg-white text-gray-900 min-h-screen rounded-lg shadow-lg">
-      {checkoutComplete ? (
-        /** ✅ Cleaned Up Receipt */
-        <div className="bg-gray-100 p-6 rounded-lg shadow-lg text-center">
-          <div className="p-4 rounded-lg flex flex-col items-center">
-            <div className="text-green-500 text-3xl mb-2">✔</div>
-            <h2 className="text-2xl font-bold">Payment Success!</h2>
-            <p className="text-xl font-semibold">${total.toFixed(2)}</p>
-          </div>
-          <div className="bg-gray-200 p-4 rounded-lg mt-4 text-left">
-            <h3 className="text-lg font-bold">Payment Details</h3>
-            <p className="text-gray-600">Ref Number: {refNumber}</p>
-            <p className="text-gray-600">Payment Status: <span className="text-green-600">✔ Success</span></p>
-            <p className="text-gray-600">Payment Time: {paymentTime}</p>
-            <p className="text-gray-600 font-semibold">Total Payment: ${total.toFixed(2)}</p>
-          </div>
-          <div className="bg-gray-100 p-4 rounded-lg mt-4 text-left">
-            <h3 className="text-lg font-bold">Need Help?</h3>
-            <p className="text-gray-600">Contact our support team anytime.</p>
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100 text-gray-900">
+      <div className="lg:w-3/4 w-full p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-lg shadow-md">
+          <h1 className="text-xl font-bold mb-2 sm:mb-0">Smart POS System</h1>
+          <div className="relative w-full sm:w-auto">
+            <input type="text" placeholder="Search" className="w-full p-2 border rounded-lg pl-8" />
+            <FaSearch className="absolute left-2 top-3 text-gray-500" />
           </div>
         </div>
-      ) : (
-        <>
-          <h1 className="text-3xl font-bold mb-4 text-center">Smart POS System - Service Sales Checkout</h1>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {services.map((service) => (
-              <div key={service.id} className="p-4 bg-gray-200 rounded-lg shadow-md">
-                <h2 className="text-lg font-semibold">{service.name}</h2>
-                <p className="text-gray-700">${service.price}</p>
-                <button
-                  className="mt-2 bg-gray-900 hover:bg-gray-700 text-white py-1 px-3 rounded"
-                  onClick={() => addToCart(service)}
-                >
-                  Add to Cart
-                </button>
-              </div>
+
+        <h2 className="text-2xl font-medium mt-6">Recommended Services</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
+          {services.map((service) => (
+        <div key={service.id} className="bg-white p-4 rounded-lg shadow-md relative flex flex-col justify-between">
+               <span className="absolute top-2 left-2 bg-white text-black text-xs px-3 py-1 rounded-full shadow-md">
+                 {service.discount}
+               </span>
+
+               <div className="w-full h-49 overflow-hidden rounded-lg">
+                 <img src={service.image} alt={service.name} className="w-full h-full object-cover rounded-lg" />
+               </div>
+
+               <h3 className="text-lg font-semibold mt-2">{service.name}</h3>
+               <p className="text-gray-700">${service.price}</p>
+               <button 
+                 className="mt-2 bg-pink-900 hover:bg-pink-700 text-white py-2 px-3 rounded w-full" 
+                 onClick={() => addToCart(service)}
+               >
+                 Add to Cart
+               </button>
+             </div>
+           ))}
+         </div>
+      </div>
+
+      <div className="lg:w-1/4 w-full bg-black text-white p-6 rounded-l-lg">
+        <h2 className="text-xl font-bold mb-4">Cart</h2>
+        {cart.length === 0 ? (
+          <p className="text-gray-400">No items in cart</p>
+        ) : (
+          <ul>
+            {cart.map((item, index) => (
+              <li key={index} className="flex justify-between py-2 border-b border-gray-700">
+                <div>
+                  <p className="text-lg font-semibold">{item.name}</p>
+                  <p className="text-gray-400">${item.price}</p>
+                </div>
+                <button className="text-red-400" onClick={() => removeFromCart(index)}>Remove</button>
+              </li>
             ))}
+          </ul>
+        )}
+
+        <div className="mt-4">
+          <h3 className="text-lg font-bold mb-2">Customer Details</h3>
+          <input type="text" name="name" placeholder="Enter Name" className="w-full p-2 text-black rounded-md mb-2" onChange={handleInputChange} value={customer.name} />
+          <input type="email" name="email" placeholder="Enter Email" className="w-full p-2 text-black rounded-md mb-2" onChange={handleInputChange} value={customer.email} />
+          <input type="tel" name="phone" placeholder="Enter Phone" className="w-full p-2 text-black rounded-md mb-2" onChange={handleInputChange} value={customer.phone} />
+        </div>
+
+        <p className="mt-4 font-semibold text-lg">Total: ${total.toFixed(2)}</p>
+        <button className="mt-4 bg-pink-700 hover:bg-pink-500 text-white py-2 px-4 rounded w-full" onClick={handleCheckout}>Checkout</button>
+      </div>
+
+      {showReceipt && (
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white text-black p-6 rounded-lg w-11/12 sm:w-1/2 md:w-1/3">
+            <h2 className="text-xl font-bold text-center mb-4">Receipt</h2>
+            <p><strong>Name:</strong> {customer.name}</p>
+            <p><strong>Email:</strong> {customer.email}</p>
+            <p><strong>Phone:</strong> {customer.phone}</p>
+            <hr className="my-3"/>
+            <ul>
+              {cart.map((item, index) => (
+                <li key={index} className="flex justify-between py-1">
+                  <span>{item.name}</span>
+                  <span>${item.price}</span>
+                </li>
+              ))}
+            </ul>
+            <hr className="my-3"/>
+            <p className="text-lg font-bold">Total: ${total.toFixed(2)}</p>
+            <button className="mt-4 bg-pink-900 hover:bg-pink-700 text-white py-2 px-4 rounded w-full" onClick={() => setShowReceipt(false)}>Close</button>
           </div>
-          <div className="mt-6">
-            <h2 className="text-xl font-bold">Cart</h2>
-            {cart.length === 0 ? (
-              <p className="text-gray-600">No items in cart</p>
-            ) : (
-              <ul>
-                {cart.map((item, index) => (
-                  <li key={index} className="flex justify-between py-2 border-b border-gray-300">
-                    {item.name} - ${item.price}
-                    <button className="text-red-500" onClick={() => removeFromCart(index)}>
-                      Remove
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <p className="mt-4 font-semibold">Total: ${total.toFixed(2)}</p>
-          </div>
-          <div className="mt-6">
-            <h2 className="text-xl font-bold">Customer Details</h2>
-            <input
-              type="text"
-              name="name"
-              placeholder="Name"
-              className="w-full p-2 rounded bg-gray-100 text-gray-900 mb-2"
-              value={customer.name}
-              onChange={handleCustomerChange}
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              className="w-full p-2 rounded bg-gray-100 text-gray-900 mb-2"
-              value={customer.email}
-              onChange={handleCustomerChange}
-            />
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Phone"
-              className="w-full p-2 rounded bg-gray-100 text-gray-900 mb-2"
-              value={customer.phone}
-              onChange={handleCustomerChange}
-            />
-          </div>
-          <button
-            className="mt-4 bg-green-500 hover:bg-green-400 text-white py-2 px-4 rounded w-full"
-            onClick={handleCheckout}
-            disabled={cart.length === 0}
-          >
-            Checkout
-          </button>
-        </>
+        </div>
       )}
     </div>
   );
