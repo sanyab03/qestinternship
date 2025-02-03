@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaShoppingCart, FaSearch } from "react-icons/fa";
+import {  FaSearch } from "react-icons/fa";
 
 const services = [
   { id: 1, name: "Fitness Class", price: 20, image: "images/workoutnew.avif", discount: "10% Off" },
